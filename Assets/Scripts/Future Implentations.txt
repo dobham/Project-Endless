@@ -1,0 +1,144 @@
+/* TODO 
+    Change the cube generation to not have duplicate vertices
+    
+        public Vector3[] topCorners = new Vector3[4] , bottomCorners = new Vector3[4];
+        public Vector3[] top = new Vector3[9], bottom = new Vector3[9], left  = new Vector3[9], right = new Vector3[9];
+        public Vector3[] topBottom = new Vector3[3], topLeft = new Vector3[3], topTop = new Vector3[3], topRight = new Vector3[3];
+        public Vector3[] bottomBottom = new Vector3[3], bottomLeft = new Vector3[3], bottomTop = new Vector3[3], bottomRight = new Vector3[3];
+        public Vector3[] leftLeft = new Vector3[3], leftRight = new Vector3[3];
+        public Vector3[] rightLeft = new Vector3[3], rightRight = new Vector3[3];
+        
+        int indexCornerTop = 0;
+                int indexTopLeft = 0;
+                int indexTopRight = 0;
+                int indexTopBottom = 0;
+                int indexTopTop = 0;
+                int indexTop = 0;
+                int indexLeft = 0;
+                int indexRight = 0;
+                int indexBottomBottom = 0;
+                int indexBottomLeft = 0;
+                int indexBottomTop = 0;
+                int indexBottomRight = 0;
+                int indexCornerBottom = 0;
+                for (var i = 0; i < 6; i++) {
+                    switch (i) {
+                        //top square
+                        case 0:
+                            for (int x = -2; x < 3; x++) {
+                                for (var y = -2; y < 3; y++, index++) {
+                                    if (x == -2 && y == -2 || x == 2 && y == 2 || x == -2 && y == 2 || x == 2 && y == -2) {
+                                        topCorners[indexCornerTop] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topCorners[indexCornerTop];
+                                        indexCornerTop++;
+                                    }
+        
+                                    else if (y > -2 && y < 3 && x == -2) {
+                                        topLeft[indexTopLeft] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topLeft[indexTopLeft];
+                                        indexTopLeft++;
+                                    }
+        
+                                    else if (y > -2 && y < 3 && x == 2) {
+                                        topRight[indexTopRight] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topRight[indexTopRight];
+                                        indexTopRight++;
+                                    }
+                                    else if (x > -2 && x < 3 && y == -2)
+                                    {
+                                        topBottom[indexTopBottom] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topBottom[indexTopBottom];
+                                        indexTopBottom++;
+                                    }
+                                    else if (x > 2 && x < 3 && y == 2)
+                                    {
+                                        topTop[indexTopTop] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topTop[indexTopTop];
+                                        indexTopTop++;
+                                    }
+                                    else
+                                    {
+                                        top[indexTop] = new Vector3(x,y,2).normalized;
+                                        verts[index] = top[indexTop];
+                                        indexTop++;
+                                    }
+                                }
+                            } break;
+                        //right square (when looking from above)
+                        case 1:
+                            for (var y = -2; y < 3; y++) {
+                                for (var z = -2; z < 3; z++, index++) {
+                                    if (y < 2 && y > -2 && z > -2 && z < 2)
+                                    {
+                                        right[indexRight] = new Vector3(2,y,z);
+                                        verts[index] = right[indexRight];
+                                        indexRight++;
+                                    }
+                                }
+                            } break;
+                        //left sqaure
+                        case 5:
+                            for (var y = 2; y > -3; y--) {
+                                for (var z = -2; z < 3; z++, index++) {
+                                    verts[index] = new Vector3(-2, y, z).normalized;
+                                }
+                            } break;
+                        //front sqaure
+                        case 3:
+                            for (var x = -2; x < 3; x++) {
+                                for (var z = -2; z < 3; z++, index++) {
+                                    verts[index] = new Vector3(x, -2, z).normalized;
+                                }
+                            } break;
+                        //back square
+                        case 4:
+                            for (var x = 2; x > -3; x--) {
+                                for (var z = -2; z < 3; z++, index++) {
+                                    verts[index] = new Vector3(x, 2, z).normalized;
+                                }
+                            } break;
+                        //bottom square
+                        case 2:
+                            for (var x = 2; x > -3; x--) {
+                                for (var y = -2; y < 3; y++, index++) {
+                                    if (x == -2 && y == -2 || x == 2 && y == 2 || x == -2 && y == 2 || x == 2 && y == -2) {
+                                        bottomCorners[indexCornerBottom] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topCorners[indexCornerBottom];
+                                        indexCornerBottom++;
+                                    }
+        
+                                    else if (y > -2 && y < 3 && x == -2) {
+                                        topLeft[indexTopLeft] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topLeft[indexTopLeft];
+                                        indexTopLeft++;
+                                    }
+        
+                                    else if (y > -2 && y < 3 && x == 2) {
+                                        topRight[indexTopRight] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topRight[indexTopRight];
+                                        indexTopRight++;
+                                    }
+                                    else if (x > -2 && x < 3 && y == -2)
+                                    {
+                                        topBottom[indexTopBottom] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topBottom[indexTopBottom];
+                                        indexTopBottom++;
+                                    }
+                                    else if (x > 2 && x < 3 && y == 2)
+                                    {
+                                        topTop[indexTopTop] = new Vector3(x,y,2).normalized;
+                                        verts[index] = topTop[indexTopTop];
+                                        indexTopTop++;
+                                    }
+                                    else
+                                    {
+                                        top[indexTop] = new Vector3(x,y,2).normalized;
+                                        verts[index] = top[indexTop];
+                                        indexTop++;
+                                    }
+                                    verts[index] = new Vector3(x, y, -2).normalized;
+                                }
+                            } break;
+                    }
+                }
+*/
