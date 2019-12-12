@@ -1,5 +1,20 @@
 /* TODO 
     Change the cube generation to not have duplicate vertices
+    -Complete asteroid generation
+    -Create Game Space and spawn asteroids within it
+    -Create player object systems
+    -2D/3D topdown camera
+    -Breakable asteroids
+        -Projectiles
+    -3D space environment
+        -Upper gravity and lower gravity bounds
+    -Third person player
+        -Perspective changer animation
+        -3D movement
+        -Player under objects makes objects increase in transparency
+    -Create 3D player model
+    -Develop BOIDS
+        
     
         public Vector3[] topCorners = new Vector3[4] , bottomCorners = new Vector3[4];
         public Vector3[] top = new Vector3[9], bottom = new Vector3[9], left  = new Vector3[9], right = new Vector3[9];
