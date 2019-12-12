@@ -2,17 +2,13 @@
     Change the cube generation to not have duplicate vertices
     -Complete asteroid generation
     -Create Game Space and spawn asteroids within it
+         -Upper gravity and lower gravity bounds
     -Create player object systems
-    -2D/3D topdown camera
-    -Breakable asteroids
-        -Projectiles
-    -3D space environment
-        -Upper gravity and lower gravity bounds
-    -Third person player
-        -Perspective changer animation
-        -3D movement
-        -Player under objects makes objects increase in transparency
-    -Create 3D player model
+    -3D palyer view camera
+    -3D scout view
+        -Free motion in all directions
+        -Can place markers
+            -Assume Markers send a MOVE command
     -Develop BOIDS
         
     
