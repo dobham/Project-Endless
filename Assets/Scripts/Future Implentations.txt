@@ -1,5 +1,4 @@
 /* TODO 
-    Change the cube generation to not have duplicate vertices
     -Complete asteroid generation
     -Create Game Space and spawn asteroids within it
          -Upper gravity and lower gravity bounds
