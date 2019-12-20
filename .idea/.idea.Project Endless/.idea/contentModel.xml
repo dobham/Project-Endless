@@ -8,6 +8,7 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="AsteriodGenerator.cs" t="Include" />
+          <e p="Boid Controller.cs" t="Include" />
           <e p="CubeGenerator.cs" t="Include" />
           <e p="Future Implentations.txt" t="Include" />
         </e>
