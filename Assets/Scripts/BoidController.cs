@@ -7,8 +7,8 @@ public class BoidController : MonoBehaviour
     private Vector3 averageHeading;
     private LayerMask obstacle;
     public Boid[] boids = new Boid[10];
-    public int[] numbers = new int[10];
-    public GameObject boidModel;
+    public Rigidbody boidModel;
+    public Rigidbody[] boidSwarm = new Rigidbody[10];
     void Start()
     {
 
@@ -16,14 +16,17 @@ public class BoidController : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             boids[i] = new Boid();
-            Instantiate(boidModel, new Vector3(0, 0, 0), Quaternion.identity);
+            boidSwarm[i] = Instantiate(boidModel, new Vector3(boids[i].posX, boids[i].posY, 0), transform.rotation);
         }
     }
     
 
     void Update()
     {
-
+        for (int i = 0, j = 1; i < 10; i++, j++)
+        {
+            boidSwarm[i].velocity = transform.forward * j;
+        }
     }
 }
 public class Boid : Application {
@@ -31,17 +34,20 @@ public class Boid : Application {
     public static float alignmentForce = 1;
     public static float avoidForce = 1;
     public static float collisionForce = 10;
-    private static Vector3 position;
-    private static float viewRadius = 5;
-    private static float avoidRadius = 2;
-    private static float collisionRadius = 5;
-    private static float minSpeed = 3;
-    private static float maxSpeed = 5;
-    private static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
-    private static float angleIncrement = Mathf.PI * 2 * goldenRatio;
-    private Vector3[] directions;
-    private const int numViewDirections = 300;
+    public static Vector3 position;
+    public static float viewRadius = 5;
+    public static float avoidRadius = 2;
+    public static float collisionRadius = 5;
+    public static float minSpeed = 3;
+    public static float maxSpeed = 5;
+    public static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
+    public static float angleIncrement = Mathf.PI * 2 * goldenRatio;
+    public Vector3[] directions;
+    public const int numViewDirections = 300;
     Vector3 boidDirection;
+    public float posX = 2;
+    public float posY = 2;
+
 
     public void setDirection()
     {
