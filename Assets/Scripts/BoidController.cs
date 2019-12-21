@@ -43,7 +43,7 @@ public class Boid : Application {
     private const int numViewDirections = 300;
     Vector3 boidDirection;
 
-    void setDirection()
+    public void setDirection()
     {
         Vector3 heading1 = new Vector3(0,0,0);
         Vector3 heading2 = new Vector3(1,1,0);
@@ -51,7 +51,7 @@ public class Boid : Application {
     }
 
     //Function for finding average heading  : FUNCTION 1
-    static Vector3 averageHeading(Boid[] boidArray)
+    public static Vector3 averageHeading(Boid[] boidArray)
     {
         Vector3[] headings = new Vector3[boidArray.Length];
         Vector3 headingSum = new Vector3();
@@ -68,7 +68,7 @@ public class Boid : Application {
     }
     //Cycle through all BOIDS, if one is in the viewRadius, add their heading value to an array
     //Take said array and average all of the values and make it its own heading value
-    static void boidDirections () {
+    public static void boidDirections () {
         Vector3[] directions = new Vector3[numViewDirections];
         for (int i = 0; i < numViewDirections; i++) {
             float t = (float) i / numViewDirections;
@@ -82,14 +82,14 @@ public class Boid : Application {
         }
     }
     //Function for BOID avoidance  : FUNCTION 2
-    static void boidAvoid(Boid[] boidArray)
+    public static void boidAvoid(Boid[] boidArray)
     {
         
     }
     //Cycle through all BOIDS, if one is in the avoidRadius, change heading and speed accordingly
 
     //Function for obstacle avoidance  : FUNCTION 3
-    static void obstacleAvoid()
+    public static void obstacleAvoid()
     {
         
     }
