@@ -22,15 +22,14 @@ public class BoidController : MonoBehaviour
         }
     }
     
-    int X = 0;
-    int Y = 0;
-    
+    //TO CHANGE ANGLE X, ADD TO DIRECTION ANGLE Z
+    //TO CHANGE ANGLE Y, ADD TO DIRECTION ANGLE Y
     void Update()
     {
         for (int i = 0, j = 10; i < 10; i++, j++)
         {
-            boidSwarm[i].velocity = Quaternion.Euler(X, Y , 0)  * Vector3.forward * 1;
-            boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY , 0);
+            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorX, boids[i].vectorY, 0)  * Vector3.forward * 1;
+            boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY, 0);
         }
     }
 }
@@ -52,6 +51,8 @@ public class Boid : Application {
     Vector3 boidDirection;
     public float angleX = -90;
     public float angleY = -90;
+    public float vectorX = 0;
+    public float vectorY = 0;
 
 
     public void setDirection()
