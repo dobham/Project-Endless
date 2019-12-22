@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,37 +17,41 @@ public class BoidController : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             boids[i] = new Boid();
-            boidSwarm[i] = Instantiate(boidModel, new Vector3(boids[i].posX, boids[i].posY, 0), transform.rotation);
+            boidSwarm[i] = Instantiate(boidModel, transform.forward, Quaternion.Euler(boids[i].angleX,boids[i].angleY,0));
+            boidSwarm[i].useGravity = false;
         }
     }
     
-
+    int X = 0;
+    int Y = 0;
+    
     void Update()
     {
-        for (int i = 0, j = 1; i < 10; i++, j++)
+        for (int i = 0, j = 10; i < 10; i++, j++)
         {
-            boidSwarm[i].velocity = transform.forward * j;
+            boidSwarm[i].velocity = Quaternion.Euler(X, Y , 0)  * Vector3.forward * 1;
+            boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY , 0);
         }
     }
 }
 public class Boid : Application {
     //Initialize the basics for each BOID
-    public static float alignmentForce = 1;
-    public static float avoidForce = 1;
-    public static float collisionForce = 10;
-    public static Vector3 position;
-    public static float viewRadius = 5;
-    public static float avoidRadius = 2;
-    public static float collisionRadius = 5;
-    public static float minSpeed = 3;
-    public static float maxSpeed = 5;
+    public float alignmentForce = 1;
+    public float avoidForce = 1;
+    public float collisionForce = 10;
+    public Vector3 position;
+    public float viewRadius = 5;
+    public float avoidRadius = 2;
+    public float collisionRadius = 5;
+    public float minSpeed = 3;
+    public float maxSpeed = 5;
     public static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
     public static float angleIncrement = Mathf.PI * 2 * goldenRatio;
     public Vector3[] directions;
     public const int numViewDirections = 300;
     Vector3 boidDirection;
-    public float posX = 2;
-    public float posY = 2;
+    public float angleX = -90;
+    public float angleY = -90;
 
 
     public void setDirection()

@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e44e72d84db7ec48a77b10a7f169b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidModel: {fileID: 4284893180688459012, guid: 77df2c6c3a779d34eb81388ef13351b9,
+  boidModel: {fileID: 3713379129244478856, guid: 7da64021e9562874e8702b684dfd13e9,
     type: 3}
   boidSwarm:
   - {fileID: 0}
@@ -592,11 +592,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: ff9e729a2e0316f4eae2f71dcacd9d85,
-        type: 3}
-      propertyPath: m_Name
-      value: Bottle
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ff9e729a2e0316f4eae2f71dcacd9d85,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -651,6 +646,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: ff9e729a2e0316f4eae2f71dcacd9d85,
+        type: 3}
+      propertyPath: m_Name
+      value: Bottle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff9e729a2e0316f4eae2f71dcacd9d85, type: 3}
