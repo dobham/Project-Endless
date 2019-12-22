@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class BoidController : MonoBehaviour
 {
-    private Vector3 averageHeading;
-    private LayerMask obstacle;
-    public Boid[] boids = new Boid[10];
+    public static int NumBoids = 6;
+    private Vector3 _averageHeading;
+    private LayerMask _obstacle;
+    public Boid[] boids = new Boid[NumBoids];
     public Rigidbody boidModel;
-    public Rigidbody[] boidSwarm = new Rigidbody[10];
+    public Rigidbody[] boidSwarm = new Rigidbody[NumBoids];
     void Start()
     {
 
         //Spawn a bunch of BOIDS
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < NumBoids; i++)
         {
             boids[i] = new Boid();
             boidSwarm[i] = Instantiate(boidModel, transform.forward, Quaternion.Euler(boids[i].angleX,boids[i].angleY,0));
@@ -26,50 +27,41 @@ public class BoidController : MonoBehaviour
     //TO CHANGE ANGLE Y, ADD TO DIRECTION ANGLE Y
     void Update()
     {
-        for (int i = 0, j = 10; i < 10; i++, j++)
+        for (int i = 0, j = 10; i < NumBoids; i++)
         {
-            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorX, boids[i].vectorY, 0)  * Vector3.forward * 1;
+            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorAngleX, boids[i].vectorAngleY, 0)  * Vector3.forward * j;
+            boids[i].BoidDirection = boidSwarm[i].velocity;
             boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY, 0);
         }
     }
 }
 public class Boid : Application {
     //Initialize the basics for each BOID
-    public float alignmentForce = 1;
-    public float avoidForce = 1;
-    public float collisionForce = 10;
-    public Vector3 position;
-    public float viewRadius = 5;
-    public float avoidRadius = 2;
-    public float collisionRadius = 5;
-    public float minSpeed = 3;
-    public float maxSpeed = 5;
-    public static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
-    public static float angleIncrement = Mathf.PI * 2 * goldenRatio;
-    public Vector3[] directions;
-    public const int numViewDirections = 300;
-    Vector3 boidDirection;
+    public float AlignmentForce = 1;
+    public float AvoidForce = 1;
+    public float CollisionForce = 10;
+    public Vector3 Position;
+    public float ViewRadius = 5;
+    public float AvoidRadius = 2;
+    public float CollisionRadius = 5;
+    private static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
+    private static float angleIncrement = Mathf.PI * 2 * goldenRatio;
+    public Vector3[] Directions;
+    private const int NumViewDirections = 300;
+    public Vector3 BoidDirection;
     public float angleX = -90;
     public float angleY = -90;
-    public float vectorX = 0;
-    public float vectorY = 0;
-
-
-    public void setDirection()
-    {
-        Vector3 heading1 = new Vector3(0,0,0);
-        Vector3 heading2 = new Vector3(1,1,0);
-        boidDirection = (heading1 - heading2)/(heading1 - heading2).magnitude;
-    }
+    public float vectorAngleX = 0;
+    public float vectorAngleY = 0;
 
     //Function for finding average heading  : FUNCTION 1
-    public static Vector3 averageHeading(Boid[] boidArray)
+    public static Vector3 AverageHeading(Boid[] boidArray)
     {
         Vector3[] headings = new Vector3[boidArray.Length];
         Vector3 headingSum = new Vector3();
         for (int i = 0 ; i < boidArray.Length; i++)
         {
-            headings[i] = boidArray[i].boidDirection;
+            headings[i] = boidArray[i].BoidDirection;
         }
         for (int i = 0 ; i < boidArray.Length; i++)
         {
@@ -80,10 +72,10 @@ public class Boid : Application {
     }
     //Cycle through all BOIDS, if one is in the viewRadius, add their heading value to an array
     //Take said array and average all of the values and make it its own heading value
-    public static void boidDirections () {
-        Vector3[] directions = new Vector3[numViewDirections];
-        for (int i = 0; i < numViewDirections; i++) {
-            float t = (float) i / numViewDirections;
+    public static void BoidDirections () {
+        Vector3[] directions = new Vector3[NumViewDirections];
+        for (int i = 0; i < NumViewDirections; i++) {
+            float t = (float) i / NumViewDirections;
             float inclination = Mathf.Acos (1 - 2 * t);
             float azimuth = angleIncrement * i;
 
@@ -94,14 +86,14 @@ public class Boid : Application {
         }
     }
     //Function for BOID avoidance  : FUNCTION 2
-    public static void boidAvoid(Boid[] boidArray)
+    public static void BoidAvoid(Boid[] boidArray)
     {
         
     }
     //Cycle through all BOIDS, if one is in the avoidRadius, change heading and speed accordingly
 
     //Function for obstacle avoidance  : FUNCTION 3
-    public static void obstacleAvoid()
+    public static void ObstacleAvoid()
     {
         
     }
