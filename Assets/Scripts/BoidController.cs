@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BoidController : MonoBehaviour
 {
-    public static int NumBoids = 6;
+    public static int NumBoids = 1;
     private Vector3 _averageHeading;
     private LayerMask _obstacle;
     public Boid[] boids = new Boid[NumBoids];
@@ -27,11 +27,16 @@ public class BoidController : MonoBehaviour
     //TO CHANGE ANGLE Y, ADD TO DIRECTION ANGLE Y
     void Update()
     {
-        for (int i = 0, j = 10; i < NumBoids; i++)
+        for (int i = 0; i < NumBoids; i++)
         {
-            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorAngleX, boids[i].vectorAngleY, 0)  * Vector3.forward * j;
+            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorAngleX, boids[i].vectorAngleY, 0)  * Vector3.forward * 5;
             boids[i].BoidDirection = boidSwarm[i].velocity;
+            boids[i].Position = boidSwarm[i].position;
             boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY, 0);
+            
+            print(boids[i].Position);
+            // for (int k = 0; k < NumBoids; k++) {
+            // }
         }
     }
 }
@@ -40,10 +45,10 @@ public class Boid : Application {
     public float AlignmentForce = 1;
     public float AvoidForce = 1;
     public float CollisionForce = 10;
-    public Vector3 Position;
-    public float ViewRadius = 5;
-    public float AvoidRadius = 2;
-    public float CollisionRadius = 5;
+    public Vector3 Position = new Vector3(0,0,0);
+    public const float ViewRadius = 5;
+    public const float AvoidRadius = 2;
+    public const float CollisionRadius = 5;
     private static float goldenRatio = (1 + Mathf.Sqrt (5)) / 2;
     private static float angleIncrement = Mathf.PI * 2 * goldenRatio;
     public Vector3[] Directions;
@@ -53,7 +58,7 @@ public class Boid : Application {
     public float angleY = -90;
     public float vectorAngleX = 0;
     public float vectorAngleY = 0;
-
+    
     //Function for finding average heading  : FUNCTION 1
     public static Vector3 AverageHeading(Boid[] boidArray)
     {

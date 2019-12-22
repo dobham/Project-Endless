@@ -206,8 +206,8 @@ public class CubeGenerator : MonoBehaviour
 
         for (int i = 0; i < (subdivisions - 1) * (subdivisions - 1) * 36; i++)
         {
-//            print(i);
-            print(triangleVerts[i]);
+            //print(i);
+            // print(triangleVerts[i]);
         }
 
         for (int i = 0; i < subdivisions * subdivisions * 6; i++)
