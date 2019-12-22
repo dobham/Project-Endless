@@ -34,9 +34,11 @@ public class BoidController : MonoBehaviour
             boids[i].Position = boidSwarm[i].position;
             boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX,boids[i].angleY, 0);
             
-            print(boids[i].Position);
-            // for (int k = 0; k < NumBoids; k++) {
-            // }
+            
+            for (int k = 0; k < NumBoids; k++) {
+                //Cycle through all boids, if x y and z values of the boids are within the index i boid's radius, add them to an array,
+                //then get the average heading of all of them, apply that heading to the current boid    
+            }
         }
     }
 }
