@@ -246,10 +246,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e44e72d84db7ec48a77b10a7f169b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidModel: {fileID: 6950852112852984153, guid: 715cdd2719bb41e478fbc4b6a16fe72d,
+  boidModel: {fileID: 6256889334696677952, guid: 3ba6a6410f3bf50439c9c398ffe13901,
     type: 3}
   boidSwarm:
-  - {fileID: 5416095110051417597, guid: a204bd59a604e87438f7055b1f43516a, type: 3}
+  - {fileID: 6256889334696677952, guid: 3ba6a6410f3bf50439c9c398ffe13901, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -259,7 +259,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  status: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!1 &907737454
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,7 +496,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1784777154}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
