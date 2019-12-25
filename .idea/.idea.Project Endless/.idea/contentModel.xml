@@ -10,8 +10,10 @@
           <e p="AsteriodGenerator.cs" t="Include" />
           <e p="Boid.cs" t="Include" />
           <e p="BoidController.cs" t="Include" />
+          <e p="BoidData.cs" t="Include" />
           <e p="CubeGenerator.cs" t="Include" />
           <e p="Future Implentations.txt" t="Include" />
+          <e p="ScriptTest.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />

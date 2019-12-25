@@ -13,7 +13,7 @@ public class BoidController : MonoBehaviour
     public Boid[] boids = new Boid[NumBoids];
     public Rigidbody boidModel;
     public Rigidbody[] boidSwarm = new Rigidbody[NumBoids];
-    public int[] status = new int[]{0,0,0,0,0,0,0,0,0,0};
+    private BoidData _status;
     void Start()
     {
         var rand = new Random();
@@ -21,8 +21,9 @@ public class BoidController : MonoBehaviour
         for (var i = 0; i < NumBoids; i++)
         {
             boids[i] = new Boid();
-            boidSwarm[i] = Instantiate(boidModel, transform.forward, Quaternion.LookRotation(boids[i].Direction, Vector3.up));
+            boidSwarm[i] = Instantiate(boidModel, boids[i].Position, Quaternion.LookRotation(boids[i].Direction, Vector3.up));
         }
+        _status = gameObject.AddComponent<BoidData>();
     }
     
     //TO CHANGE ANGLE X, ADD TO DIRECTION ANGLE Z
@@ -31,9 +32,11 @@ public class BoidController : MonoBehaviour
     {
         for (var i = 0; i < NumBoids; i++)
         {
-            boidSwarm[i].velocity = boids[i].Direction * boids[i].speed;
+            boidSwarm[i].velocity = boids[i].Direction * Boid.Speed;
             boids[i].Position = boidSwarm[i].position;
-            boidSwarm[i].rotation = Quaternion.LookRotation(boids[i].Direction, Vector3.up);
+            // Vector3 newAngle = boids[i].Direction;
+            // boidSwarm[i].rotation = Quaternion.LookRotation(newAngle, Vector3.up);
+            boidSwarm[i].transform.LookAt(boids[i].Direction);
             for (var k = 0; k < NumBoids; k++)
             {
                 //Cycle through all boids, if x y and z values of the boids are within the index i boid's radius, add them to an array,
@@ -42,42 +45,47 @@ public class BoidController : MonoBehaviour
                 if (((boids[k].Position.x - boids[i].Position.x) * (boids[k].Position.x - boids[i].Position.x)) +
                     ((boids[k].Position.y - boids[i].Position.y) * (boids[k].Position.y - boids[i].Position.y)) +
                     ((boids[k].Position.z - boids[i].Position.z) * (boids[k].Position.z - boids[i].Position.z)) <
-                    boids[i].ViewRadius) //( x-cx ) ^2 + (y-cy) ^2 + (z-cz) ^ 2 < r^2 LIES INSIDE SPHERE
+                    Boid.ViewRadius) //( x-cx ) ^2 + (y-cy) ^2 + (z-cz) ^ 2 < r^2 LIES INSIDE SPHERE
                 {
                     boids[i].ObservedBoids[k] = boids[k];
-                    status[k] = 1;
-                } else status[k] = 0;
+                    boids[i].Direction = Boid.AverageHeading(boids[i].ObservedBoids);
+                    _status.detectedBoids[k] = 1;
+                }
+                else
+                {
+                    boids[i].Direction = Vector3.forward;
+                    _status.detectedBoids[k] = 0;
+                }
             }
-            boids[i].Direction = Boid.AverageHeading(boids[i].ObservedBoids);
-            print(i);
-            print(boidSwarm[i].position);
         }
-        // for (int i = 0; i < NumBoids; i++)
-        // {
-        //     print(boids[i].Direction);
-        // }
-        Debug.DrawLine(boids[0].Position, boids[0].Direction, Color.white);
+        Debug.DrawLine(new Vector3(0,0,0), boids[0].Position*1.5f, Color.white);
     }
 }
-public class Boid : Application {
-    private static  Random rand = new Random();
-    //Initialize the basics for each BOID
+
+public class Boid : Application
+{
+    private static readonly Random Rand = new Random();
+    
     public float AlignmentForce = 1;
     public float AvoidForce = 1;
     public float CollisionForce = 10;
+    
     public readonly Boid[] ObservedBoids = new Boid[10];
-    public Vector3 Position = new Vector3(0,0,0);
-    public float ViewRadius = 5;
-    public const float AvoidRadius = 2;
-    public const float CollisionRadius = 5;
+    public const float ViewRadius = 15;
+    public readonly float AvoidRadius = 2;
+    public readonly float CollisionRadius = 5;
+    
+    public Vector3 Position = new Vector3(Rand.Next(1,5),  Rand.Next(1,5), Rand.Next(1,5));
+    public const float Speed = 3;
+    public Vector3 Direction = new Vector3(Rand.Next(1, 5), Rand.Next(-5, 10), Rand.Next(1, 10));
+
+    
     private static readonly float GoldenRatio = (1 + Mathf.Sqrt (5)) / 2;
     private static readonly float AngleIncrement = Mathf.PI * 2 * GoldenRatio;
-    public Vector3[] Directions;
     private const int NumViewDirections = 300;
-    public Vector3 Direction = new Vector3(rand.Next(1,15),  rand.Next(1,10), rand.Next(1,10));
-    public readonly float speed = 3;
     
     //Function for finding average heading  : FUNCTION 1
+
     public static Vector3 AverageHeading(Boid[] boidArray) {
         var headingSum = new Vector3();
         var arrLength = boidArray.Count(t1 => t1 != null); //Gets the size of the non null array of boids
