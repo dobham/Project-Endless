@@ -20,8 +20,7 @@ public class BoidController : MonoBehaviour
         for (var i = 0; i < NumBoids; i++)
         {
             boids[i] = new Boid();
-            boidSwarm[i] = Instantiate(boidModel, transform.forward, Quaternion.Euler(boids[i].angleX, boids[i].angleY, boids[i].angleZ));
-            boidSwarm[i].useGravity = false;
+            boidSwarm[i] = Instantiate(boidModel, transform.forward, Quaternion.LookRotation(boids[i].Direction));
         }
     }
     
@@ -31,13 +30,15 @@ public class BoidController : MonoBehaviour
     {
         for (var i = 0; i < NumBoids; i++)
         {
-            //                              Angle of the object                                             //Vector multiplied by the speed
-            boidSwarm[i].velocity = Quaternion.Euler(boids[i].vectorAngleX, boids[i].vectorAngleY, boids[i].vectorAngleZ)  * boids[i].Direction * boids[i].speed;
-            // boids[i].Direction = boidSwarm[i].velocity;
+            Vector3 newVec = new Vector3(boids[i].Direction.x, boids[i].Direction.y, boids[i].Direction.z);
+            //Vector multiplied by the speed
+            boidSwarm[i].velocity = boids[i].Direction * boids[i].speed;
             boids[i].Position = boidSwarm[i].position;
-            boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX, boids[i].angleY, boids[i].angleZ);
-            print(boids[i].Direction);
-            
+            boidSwarm[i].rotation = Quaternion.Euler(boids[i].Direction);
+            print(boidSwarm[i].rotation);
+            boidSwarm[i].rotation = Quaternion.LookRotation(boids[i].Direction);
+            print(boidSwarm[i].rotation);
+            // boidSwarm[i].rotation = Quaternion.Euler(boids[i].angleX, boids[i].angleY, boids[i].angleZ);
             for (var k = 0; k < NumBoids; k++)
             {
                 //Cycle through all boids, if x y and z values of the boids are within the index i boid's radius, add them to an array,
@@ -52,10 +53,17 @@ public class BoidController : MonoBehaviour
                 }
             }
             boids[i].Direction = Boid.AverageHeading(boids[i].ObservedBoids);
+            // print(boidSwarm[i].rotation);
         }
+        // for (int i = 0; i < NumBoids; i++)
+        // {
+        //     print(boids[i].Direction);
+        // }
+        Debug.DrawLine(boids[0].Position, boids[0].Direction, Color.white);
     }
 }
 public class Boid : Application {
+    private static  Random rand = new Random();
     //Initialize the basics for each BOID
     public float AlignmentForce = 1;
     public float AvoidForce = 1;
@@ -69,14 +77,14 @@ public class Boid : Application {
     private static readonly float AngleIncrement = Mathf.PI * 2 * GoldenRatio;
     public Vector3[] Directions;
     private const int NumViewDirections = 300;
-    public Vector3 Direction = Vector3.forward;
+    public Vector3 Direction = new Vector3(rand.Next(1,15),  rand.Next(1,10), rand.Next(1,10));
     public readonly float angleX = -90;
     public readonly float angleY = -0;
     public readonly float angleZ = -90;
     public readonly float vectorAngleX = 0;
     public readonly float vectorAngleY = 0;
     public readonly float vectorAngleZ = 0;
-    public readonly float speed = 5;
+    public readonly float speed = 3;
     
     //Function for finding average heading  : FUNCTION 1
     public static Vector3 AverageHeading(Boid[] boidArray) {

@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 757810822}
   - component: {fileID: 757810823}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Boid Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -249,7 +249,7 @@ MonoBehaviour:
   boidModel: {fileID: 3713379129244478856, guid: 7da64021e9562874e8702b684dfd13e9,
     type: 3}
   boidSwarm:
-  - {fileID: 0}
+  - {fileID: 3713379129244478856, guid: 7da64021e9562874e8702b684dfd13e9, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
