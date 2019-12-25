@@ -18,7 +18,7 @@ public class AsteriodGenerator : MonoBehaviour
          asteroid.GetComponent<MeshRenderer>().material = material;*/
     }
 
-    public void renderAsteriod()
+    private void renderAsteriod()
     {
         LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
         Color c1 = new Color(0.5f, 0.5f, 0.5f, 1);
