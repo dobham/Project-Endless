@@ -246,10 +246,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e44e72d84db7ec48a77b10a7f169b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidModel: {fileID: 3713379129244478856, guid: 7da64021e9562874e8702b684dfd13e9,
+  boidModel: {fileID: 5416095110051417597, guid: a204bd59a604e87438f7055b1f43516a,
     type: 3}
   boidSwarm:
-  - {fileID: 3713379129244478856, guid: 7da64021e9562874e8702b684dfd13e9, type: 3}
+  - {fileID: 5416095110051417597, guid: a204bd59a604e87438f7055b1f43516a, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -259,6 +259,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  status: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!1 &907737454
 GameObject:
   m_ObjectHideFlags: 0
