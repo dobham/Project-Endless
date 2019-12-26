@@ -14,9 +14,12 @@ public class BoidController : MonoBehaviour
     public Boid[] boids = new Boid[NumBoids];
     public Rigidbody boidModel;
     public Rigidbody[] boidSwarm = new Rigidbody[NumBoids];
+    private LayerMask _boidLayer;
     void Start()
     {
         var rand = new Random();
+        //Have the boids be on a separate layer for the racist's to ignore
+        _boidLayer = LayerMask.GetMask("Ignore Raycast");
         //Spawn a bunch of BOIDS
         for (var i = 0; i < NumBoids; i++)
         {
@@ -56,6 +59,7 @@ public class BoidController : MonoBehaviour
                     boids[i].Status[k] = 0;
                 }
             }
+            boids[i].ObstacleAvoid(boids[i].Position, boids[i].CollisionDirections(), _boidLayer);
         }
         Debug.DrawLine(new Vector3(0,0,0), boids[0].Position*1.5f, Color.white);
         for (int i = 0; i < NumBoids; i++)
@@ -74,27 +78,25 @@ public class Boid : Application
     private static readonly Random Rand = new Random();
 
     public int[] Status = new int[BoidController.NumBoids];
-
-    public float AlignmentForce = 1;
-    public float AvoidForce = 1;
-    public float CollisionForce = 10;
-
+    
     public readonly Boid[] ObservedBoids = new Boid[10];
     public const float ViewRadius = 15;
-    public readonly float AvoidRadius = 2;
-    public readonly float CollisionRadius = 5;
+    public readonly float CollisionRadius = 15;
 
-    public Vector3 Position = new Vector3(Rand.Next(1, 5), Rand.Next(1, 5), Rand.Next(1, 5));
-    public const float Speed = 3;
+    public Vector3 Position = new Vector3(Rand.Next(5, 15), Rand.Next(5, 15), Rand.Next(5, 15));
+    public const float Speed = 10;
     public Vector3 Direction = new Vector3(Rand.Next(1, 5), Rand.Next(-5, 10), Rand.Next(1, 10));
 
 
     private static readonly float GoldenRatio = (1 + Mathf.Sqrt(5)) / 2;
     private static readonly float AngleIncrement = Mathf.PI * 2 * GoldenRatio;
     private const int NumViewDirections = 300;
+    private RaycastHit detectedObject;
+    public Vector3[] Directions = new Vector3[NumViewDirections];
 
     //Function for finding average heading  : FUNCTION 1
-
+    //Cycle through all BOIDS, if one is in the viewRadius, add their heading value to an array
+    //Take said array and average all of the values and make it its own heading value
     public static Vector3 AverageHeading(Boid[] boidArray) {
         var headingSum = new Vector3();
         var arrLength = boidArray.Count(t1 => t1 != null); //Gets the size of the non null array of boids
@@ -118,10 +120,7 @@ public class Boid : Application
         var averageHeading = headingSum / arrLength;
         return averageHeading.normalized;
     }
-    //Cycle through all BOIDS, if one is in the viewRadius, add their heading value to an array
-    //Take said array and average all of the values and make it its own heading value
-    public void CollisionDirections () {
-        Vector3[] directions = new Vector3[NumViewDirections];
+    public Vector3[] CollisionDirections () {
         for (var i = 0; i < NumViewDirections; i++) {
             var t = (float) i / NumViewDirections;
             var inclination = Mathf.Acos (1 - 2 * t);
@@ -130,18 +129,32 @@ public class Boid : Application
             var x = Mathf.Sin (inclination) * Mathf.Cos (azimuth);
             var y = Mathf.Sin (inclination) * Mathf.Sin (azimuth);
             var z = Mathf.Cos (inclination);
-            directions[i] = new Vector3 (x, y, z);
+            Directions[i] = new Vector3 (x, y, z);
+        }
+        return Directions;
+    }
+
+    //Function for obstacle avoidance  : FUNCTION 2
+    //Cast out rays to locate obstacle, if obstacle is near, change heading and speed
+    public void ObstacleAvoid(Vector3 position, Vector3[] directions, LayerMask boidLayer)
+    {
+        for (int i = 0; i < NumViewDirections; i++)
+        {
+            //If the detected object is a boid, ignore it and dont save the object
+            if (Physics.Raycast(position, directions[i]*4, CollisionRadius, boidLayer))
+            {
+                Debug.DrawRay(position, directions[i]*4, Color.green);
+            }
+            //If it detects a wall, save the object and get away from it
+            else if (Physics.Raycast(position, directions[i]*4, out detectedObject, CollisionRadius))
+            {
+                Debug.DrawRay(position, directions[i]*4, Color.red);
+            }
+            //Otherwise, there are no obstacles and path is clear
+            else
+            {
+                Debug.DrawRay(position, directions[i]*4, Color.green);
+            }
         }
     }
-    //Function for BOID avoidance  : FUNCTION 2
-    public void BoidAvoid(Boid[] boidArray) {
-        
-    }
-    //Cycle through all BOIDS, if one is in the avoidRadius, change heading and speed accordingly
-
-    //Function for obstacle avoidance  : FUNCTION 3
-    public void ObstacleAvoid() {
-        
-    }
-    //Cast out rays to locate obstacle, if obstacle is near, change heading and speed
 }
