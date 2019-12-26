@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
 public class BoidController : MonoBehaviour
 {
-    private const int NumBoids = 10;
+    public static int NumBoids = 10;
     private Vector3 _averageHeading;
     private LayerMask _obstacle;
     public Boid[] boids = new Boid[NumBoids];
     public Rigidbody boidModel;
     public Rigidbody[] boidSwarm = new Rigidbody[NumBoids];
-    private BoidData _status;
     void Start()
     {
         var rand = new Random();
@@ -23,7 +23,6 @@ public class BoidController : MonoBehaviour
             boids[i] = new Boid();
             boidSwarm[i] = Instantiate(boidModel, boids[i].Position, Quaternion.LookRotation(boids[i].Direction, Vector3.up));
         }
-        _status = gameObject.AddComponent<BoidData>();
     }
     
     //TO CHANGE ANGLE X, ADD TO DIRECTION ANGLE Z
@@ -49,41 +48,51 @@ public class BoidController : MonoBehaviour
                 {
                     boids[i].ObservedBoids[k] = boids[k];
                     boids[i].Direction = Boid.AverageHeading(boids[i].ObservedBoids);
-                    _status.detectedBoids[k] = 1;
+                    boids[i].Status[k] = 1;
                 }
                 else
                 {
                     boids[i].Direction = Vector3.forward;
-                    _status.detectedBoids[k] = 0;
+                    boids[i].Status[k] = 0;
                 }
             }
         }
         Debug.DrawLine(new Vector3(0,0,0), boids[0].Position*1.5f, Color.white);
+        for (int i = 0; i < NumBoids; i++)
+        {
+            for (int j = 0; j < NumBoids; j++)
+            {
+                print("Boid" + i + ": " + boids[i].Status[j]);
+            }
+            // print("Boid " + i  + ": " + boids[i].Status[0] + boids[i].Status[1] + boids[i].Status[2] + boids[i].Status[3] + boids[i].Status[4] + boids[i].Status[5] + boids[i].Status[6] + boids[i].Status[7] + boids[i].Status[8] + boids[i].Status[9]);
+        }
     }
 }
 
 public class Boid : Application
 {
     private static readonly Random Rand = new Random();
-    
+
+    public int[] Status = new int[BoidController.NumBoids];
+
     public float AlignmentForce = 1;
     public float AvoidForce = 1;
     public float CollisionForce = 10;
-    
+
     public readonly Boid[] ObservedBoids = new Boid[10];
     public const float ViewRadius = 15;
     public readonly float AvoidRadius = 2;
     public readonly float CollisionRadius = 5;
-    
-    public Vector3 Position = new Vector3(Rand.Next(1,5),  Rand.Next(1,5), Rand.Next(1,5));
+
+    public Vector3 Position = new Vector3(Rand.Next(1, 5), Rand.Next(1, 5), Rand.Next(1, 5));
     public const float Speed = 3;
     public Vector3 Direction = new Vector3(Rand.Next(1, 5), Rand.Next(-5, 10), Rand.Next(1, 10));
 
-    
-    private static readonly float GoldenRatio = (1 + Mathf.Sqrt (5)) / 2;
+
+    private static readonly float GoldenRatio = (1 + Mathf.Sqrt(5)) / 2;
     private static readonly float AngleIncrement = Mathf.PI * 2 * GoldenRatio;
     private const int NumViewDirections = 300;
-    
+
     //Function for finding average heading  : FUNCTION 1
 
     public static Vector3 AverageHeading(Boid[] boidArray) {
@@ -135,6 +144,4 @@ public class Boid : Application
         
     }
     //Cast out rays to locate obstacle, if obstacle is near, change heading and speed
-    
-    
 }

@@ -259,6 +259,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  status: {fileID: 0}
 --- !u!1 &907737454
 GameObject:
   m_ObjectHideFlags: 0
