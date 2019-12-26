@@ -8,37 +8,34 @@ using Random = System.Random;
 
 public class BoidController : MonoBehaviour
 {
-    public static int NumBoids = 10;
+    public const int NumBoids = 10;
     private Vector3 _averageHeading;
     private LayerMask _obstacle;
     public Boid[] boids = new Boid[NumBoids];
     public Rigidbody boidModel;
-    public Rigidbody[] boidSwarm = new Rigidbody[NumBoids];
+    private readonly Rigidbody[] _boidSwarm = new Rigidbody[NumBoids];
     private LayerMask _boidLayer;
+    
     void Start()
     {
         var rand = new Random();
-        //Have the boids be on a separate layer for the racist's to ignore
+        //Have the boids be on a separate layer for the raycast's to ignore
         _boidLayer = LayerMask.GetMask("Ignore Raycast");
         //Spawn a bunch of BOIDS
         for (var i = 0; i < NumBoids; i++)
         {
             boids[i] = new Boid();
-            boidSwarm[i] = Instantiate(boidModel, boids[i].Position, Quaternion.LookRotation(boids[i].Direction, Vector3.up));
+            _boidSwarm[i] = Instantiate(boidModel, boids[i].Position, Quaternion.LookRotation(boids[i].Direction, Vector3.up));
         }
     }
     
-    //TO CHANGE ANGLE X, ADD TO DIRECTION ANGLE Z
-    //TO CHANGE ANGLE Y, ADD TO DIRECTION ANGLE Y
     void Update()
     {
         for (var i = 0; i < NumBoids; i++)
         {
-            boidSwarm[i].velocity = boids[i].Direction * Boid.Speed;
-            boids[i].Position = boidSwarm[i].position;
-            // Vector3 newAngle = boids[i].Direction;
-            // boidSwarm[i].rotation = Quaternion.LookRotation(newAngle, Vector3.up);
-            boidSwarm[i].transform.LookAt(boids[i].Direction);
+            _boidSwarm[i].velocity = boids[i].Direction * Boid.Speed;
+            boids[i].Position = _boidSwarm[i].position;
+            _boidSwarm[i].transform.LookAt(boids[i].Direction);
             for (var k = 0; k < NumBoids; k++)
             {
                 //Cycle through all boids, if x y and z values of the boids are within the index i boid's radius, add them to an array,
@@ -68,7 +65,6 @@ public class BoidController : MonoBehaviour
             {
                 print("Boid" + i + ": " + boids[i].Status[j]);
             }
-            // print("Boid " + i  + ": " + boids[i].Status[0] + boids[i].Status[1] + boids[i].Status[2] + boids[i].Status[3] + boids[i].Status[4] + boids[i].Status[5] + boids[i].Status[6] + boids[i].Status[7] + boids[i].Status[8] + boids[i].Status[9]);
         }
     }
 }
