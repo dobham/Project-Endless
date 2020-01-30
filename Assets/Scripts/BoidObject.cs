@@ -2,80 +2,85 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
-public class BoidObject : MonoBehaviour
-{
+public class BoidObject : MonoBehaviour {
     public Vector3 directionCurrent;
     public Vector3 directionTarget;
-    public float rotationSpeed = 0.01f;
-    public float movementSpeed = 15f;
+    public Transform objectTransform;
     
-    private Transform objectTransform;
-    private GameObject controller;
-    private GameObject[] _boids;
     private BoidMaster _masterScript;
     
-    public Vector3[] _observedDirections; 
-    public Vector3[] _observedPositions;
+    private const float RotationSpeed = 0.01f;
     
-    private float _viewRadius = 100;
-    private float _obstacleRadius = 45;
+    private const int NumDirections = 300;
+    private const float ViewRadius = 25;
+    private const float ObstacleRadius = 35;
 
-    private void Start()
-    {
+    private Vector3[] _observedDirections; //Might be subject to becoming a public variable, might add a feature where other boids will see what boids are in their arrays
+    private Vector3[] _observedPositions;
+    private Vector3[] _observedAvoidDirections;
+    private static Vector3[] _viewDirections = new Vector3[NumDirections];
+
+    private RaycastHit _detectedObject;
+    private LayerMask boidLayer;
+    private LayerMask obstacleLayer;
+
+    private void Start() {
         _masterScript = (BoidMaster)GameObject.FindObjectOfType(typeof(BoidMaster));
-        controller = _masterScript.gameObject;
         objectTransform = transform;
         var startingDirection = objectTransform.rotation * Vector3.forward;
         directionCurrent = startingDirection;
         directionTarget = startingDirection;
         _observedDirections = new Vector3[_masterScript.NumBoids];
         _observedPositions = new Vector3[_masterScript.NumBoids];
+        _observedAvoidDirections = new Vector3[_masterScript.NumBoids];
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (directionTarget.x > directionCurrent.x)
         {
-            directionCurrent.x += rotationSpeed;
+            directionCurrent.x += RotationSpeed;
         }
-        else directionCurrent.x -= rotationSpeed;
+        else directionCurrent.x -= RotationSpeed;
         
         if (directionTarget.y > directionCurrent.y)
         {
-            directionCurrent.y += rotationSpeed;
+            directionCurrent.y += RotationSpeed;
         }
-        else directionCurrent.y -= rotationSpeed;
+        else directionCurrent.y -= RotationSpeed;
         
         if (directionTarget.z > directionCurrent.z)
         {
-            directionCurrent.z += rotationSpeed;
+            directionCurrent.z += RotationSpeed;
         }
-        else directionCurrent.z -= rotationSpeed;
+        else directionCurrent.z -= RotationSpeed;
 
-        print(_masterScript.getObject(1));
-        objectTransform.position += directionCurrent * movementSpeed;
+        objectTransform.position += directionCurrent * 0.05f;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
-        int numBoidDirections=0,numBoidPositions=0;
+        int numBoidDirections=0,numBoidPositions=0,numBoidAvoidDirections=0;
         for (var i = 0; i < _masterScript.NumBoids; i++)
         { 
-            if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < _viewRadius) //DIRECTIONS
+            if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < ViewRadius) //DIRECTIONS
             {
                 _observedDirections[i] = _masterScript.BoidObjects[i].directionCurrent;
-                numBoidDirections++;
-            }
-            if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < _viewRadius) //POSITIONS
-            {
                 _observedPositions[i] = _masterScript.BoidObjects[i].objectTransform.position;
+                
                 numBoidPositions++;
+                numBoidDirections++;
+                numBoidAvoidDirections++;
             }
         }
         directionTarget = AverageHeading(_observedDirections, numBoidDirections) + AveragePosition(_observedPositions, numBoidPositions);
+        ObstacleAvoid();
+        // if (directionTarget == Vector3.zero)
+        // {
+        //     directionTarget = Vector3.forward*8;
+        // }
     }
 
-    public Vector3 AverageHeading(Vector3[] boidDirections, int numBoids)
-    {
+    private static Vector3 AverageHeading(Vector3[] boidDirections, int numBoids) {
         var average = Vector3.zero;
         for (var i = 0; i < numBoids; i++)
         {
@@ -86,9 +91,8 @@ public class BoidObject : MonoBehaviour
 
         return average;
     }
-    
-    public Vector3 AveragePosition(Vector3[] boidPositions, int numBoids)
-    {
+
+    private static Vector3 AveragePosition(Vector3[] boidPositions, int numBoids) {
         Vector3 average = new Vector3();
         for (var i = 0; i < numBoids; i++)
         {
@@ -99,5 +103,52 @@ public class BoidObject : MonoBehaviour
 
         return average;
     }
+
+    private static Vector3[] GetDirections() {
+        var goldenRatio = (1 + Mathf.Sqrt(5)) / 2;
+        var angleIncrement = Mathf.PI * 2 * goldenRatio;
+        
+        for (var i = 0; i < NumDirections; i++)
+        {
+            var t = (float) i / NumDirections;
+            var inclination = Mathf.Acos(1 - 2 * t);
+            var azimuth = angleIncrement * i;
+     
+            var x = Mathf.Sin(inclination) * Mathf.Cos(azimuth);
+            var y = Mathf.Sin(inclination) * Mathf.Sin(azimuth);
+            var z = Mathf.Cos(inclination);
+            _viewDirections[i] = new Vector3(x, y, z);
+        }
+        
+        return _viewDirections;
+    }
     
+    public void ObstacleAvoid()
+    {
+        var directions = GetDirections(); 
+        for (var i = 0; i < NumDirections; i++)
+        {
+            //If the detected object is a boid, ignore it and dont save the object
+            if (Physics.Raycast(objectTransform.position, directions[i] * 2, ObstacleRadius, boidLayer))
+            {
+                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
+            }
+            //If it detects a wall, save the object and get away from it
+            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius))
+            {
+                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
+            }
+            //Otherwise, there are no obstacles and path is clear
+            else
+            {
+                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
+            }
+
+            // Ray ray = new Ray(position,directions[i]);
+            // if (Physics.Raycast(ray, CollisionRadius, boidLayer))
+            // {
+            //     Debug.DrawRay(position, directions[i]*4, Color.blue);
+            // }
+        }
+    }
 }

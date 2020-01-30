@@ -118,21 +118,21 @@ public class Boid : Application
     }
 
     public Vector3[] CollisionDirections()
-    {
-        for (var i = 0; i < NumViewDirections; i++)
-        {
-            var t = (float) i / NumViewDirections;
-            var inclination = Mathf.Acos(1 - 2 * t);
-            var azimuth = AngleIncrement * i;
-
-            var x = Mathf.Sin(inclination) * Mathf.Cos(azimuth);
-            var y = Mathf.Sin(inclination) * Mathf.Sin(azimuth);
-            var z = Mathf.Cos(inclination);
-            Directions[i] = new Vector3(x, y, z);
-        }
-
-        return Directions;
-    }
+         {
+             for (var i = 0; i < NumViewDirections; i++)
+             {
+                 var t = (float) i / NumViewDirections;
+                 var inclination = Mathf.Acos(1 - 2 * t);
+                 var azimuth = AngleIncrement * i;
+     
+                 var x = Mathf.Sin(inclination) * Mathf.Cos(azimuth);
+                 var y = Mathf.Sin(inclination) * Mathf.Sin(azimuth);
+                 var z = Mathf.Cos(inclination);
+                 Directions[i] = new Vector3(x, y, z);
+             }
+     
+             return Directions;
+         }
 
     //Function for obstacle avoidance  : FUNCTION 2
     //Cast out rays to locate obstacle, if obstacle is near, change heading and speed
