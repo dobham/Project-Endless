@@ -11,7 +11,7 @@ public class BoidObject : MonoBehaviour
     public Vector3 directionCurrent;
     public Vector3 directionTarget;
     public Vector3 position;
-    public float speed = 0;
+    public float rotationSpeed = 0.01f;
     private Transform objectTransform;
     
     private float _viewRadius = 30;
@@ -29,21 +29,21 @@ public class BoidObject : MonoBehaviour
     {
         if (directionTarget.x > directionCurrent.x)
         {
-            directionCurrent.x += 0.01f;
+            directionCurrent.x += rotationSpeed;
         }
-        else directionCurrent.x -= 0.01f;
+        else directionCurrent.x -= rotationSpeed;
         
         if (directionTarget.y > directionCurrent.y)
         {
-            directionCurrent.y += 0.01f;
+            directionCurrent.y += rotationSpeed;
         }
-        else directionCurrent.y -= 0.01f;
+        else directionCurrent.y -= rotationSpeed;
         
         if (directionTarget.z > directionCurrent.z)
         {
-            directionCurrent.z += 0.01f;
+            directionCurrent.z += rotationSpeed;
         }
-        else directionCurrent.z -= 0.01f;
+        else directionCurrent.z -= rotationSpeed;
 
         objectTransform.position += directionCurrent;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
