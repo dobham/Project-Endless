@@ -16,7 +16,7 @@ public class BoidObject : MonoBehaviour {
     
     private const int NumDirections = 300;
     private const float ViewRadius = 25;
-    private const float ObstacleRadius = 35;
+    private const float ObstacleRadius = 8;
 
     private Vector3[] _observedDirections; //Might be subject to becoming a public variable, might add a feature where other boids will see what boids are in their arrays
     private Vector3[] _observedPositions;
@@ -64,7 +64,7 @@ public class BoidObject : MonoBehaviour {
         }
         else directionCurrent.z -= RotationSpeed;
 
-        objectTransform.position += directionCurrent * 0.05f;
+        objectTransform.position += directionCurrent * 0.5f;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
         int numBoidDirections=0,numBoidPositions=0,numBoidAvoidDirections=0;
         for (var i = 0; i < _masterScript.NumBoids; i++)
@@ -79,8 +79,7 @@ public class BoidObject : MonoBehaviour {
                 numBoidAvoidDirections++;
             }
         }
-        directionTarget = (Vector3.forward*0.01f + AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.01f).normalized;
-        ObstacleAvoid();
+        directionTarget = (Vector3.forward*0.001f + AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.01f + ObstacleAvoid()*0.1f).normalized;
         // if (directionTarget == Vector3.zero)
         // {
         //     directionTarget = Vector3.forward*8;
@@ -130,9 +129,13 @@ public class BoidObject : MonoBehaviour {
         return _viewDirections;
     }
     
-    public void ObstacleAvoid()
+    public Vector3 ObstacleAvoid()
     {
-        var directions = GetDirections(); 
+        var directions = GetDirections();
+
+        Vector3 average = Vector3.zero;
+        int numObstacles=0;
+
         for (var i = 0; i < NumDirections; i++)
         {
             //If the detected object is a boid, ignore it and dont save the object
@@ -141,10 +144,14 @@ public class BoidObject : MonoBehaviour {
             if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius, obstacleLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
+                average+=directions[i].normalized;
+                numObstacles++;
             }
-            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, ViewRadius, boidLayer))
+            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, ObstacleRadius, boidLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
+                average += directions[i].normalized;
+                numObstacles++;
             }
             //Otherwise, there are no obstacles and path is clear
             else
@@ -158,5 +165,7 @@ public class BoidObject : MonoBehaviour {
             //     Debug.DrawRay(position, directions[i]*4, Color.blue);
             // }
         }
+        average /= -numObstacles;
+        return average;
     }
 }
