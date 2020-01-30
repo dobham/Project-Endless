@@ -12,13 +12,13 @@ public class BoidObject : MonoBehaviour {
     
     private BoidMaster _masterScript;
     
-    private const float RotationSpeed = 0.01f;
+    private const float RotationSpeed = 0.005f;
     private const float MovementSpeed = 0.45f;
 
     private const int NumDirections = 300;
     private const float ViewRadius = 25;
     private const float ObstacleRadius = 20;
-    private const float boidRadius = 25;
+    private const float boidRadius = 5;
 
     private Vector3[] _observedDirections; //Might be subject to becoming a public variable, might add a feature where other boids will see what boids are in their arrays
     private Vector3[] _observedPositions;
@@ -79,7 +79,7 @@ public class BoidObject : MonoBehaviour {
                 numBoidDirections++;
             }
         }
-        directionTarget = (AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.005f + ObstacleAvoid()*0.5f).normalized*MovementSpeed;
+        directionTarget = (AverageHeading(_observedDirections, numBoidDirections)*2 + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.05f + ObstacleAvoid()*0.5f).normalized*MovementSpeed;
         if (directionTarget == Vector3.zero)
         {
             directionTarget = _masterScript.controllerTransform.position - objectTransform.position;
@@ -144,10 +144,10 @@ public class BoidObject : MonoBehaviour {
             if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius, obstacleLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
-                average+=directions[i].normalized*(ObstacleRadius-Vector3.Distance(objectTransform.position, _detectedObject.transform.position));
+                average-=directions[i].normalized*(ObstacleRadius-Vector3.Distance(objectTransform.position, _detectedObject.transform.position));
                 numObstacles++;
             }
-            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, boidRadius, boidLayer))
+            else if (Physics.Raycast(objectTransform.position, directions[i], boidRadius, boidLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
                 average += directions[i].normalized * 1f;
