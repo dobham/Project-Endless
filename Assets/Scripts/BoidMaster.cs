@@ -26,12 +26,10 @@ public class BoidMaster : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getObject(1);
     }
 
     public GameObject getObject(int i)
     {
-        print(Boids[i]);
         return Boids[i];
     }
 }

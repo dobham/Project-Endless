@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5869978595397589622}
   - component: {fileID: 5869978595397589620}
   m_Layer: 0
-  m_Name: Boid Spawn
+  m_Name: Boid Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,4 +59,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2174992577bf053438daf8a4f0508ae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NumBoids: 10
+  Boids:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  BoidObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   boid: {fileID: 3659234054523166862, guid: 5610fc6ed5ae0fe44a50e6726fe35e04, type: 3}

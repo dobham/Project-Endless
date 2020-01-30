@@ -12,7 +12,7 @@ public class BoidObject : MonoBehaviour
     public float movementSpeed = 15f;
     
     private Transform objectTransform;
-    public  GameObject controller;
+    private GameObject controller;
     private GameObject[] _boids;
     private BoidMaster _masterScript;
     
@@ -24,11 +24,11 @@ public class BoidObject : MonoBehaviour
 
     private void Start()
     {
-        Random rand = new Random();
+        _masterScript = (BoidMaster)GameObject.FindObjectOfType(typeof(BoidMaster));
+        controller = _masterScript.gameObject;
         objectTransform = transform;
         directionCurrent = objectTransform.rotation * Vector3.forward;
         directionTarget = objectTransform.rotation * Vector3.forward;
-        // controller.GetComponent<BoidMaster>().getObject(1);
     }
 
     private void Update()
@@ -50,7 +50,8 @@ public class BoidObject : MonoBehaviour
             directionCurrent.z += rotationSpeed;
         }
         else directionCurrent.z -= rotationSpeed;
-        
+
+        print(_masterScript.getObject(1));
         objectTransform.position += directionCurrent * movementSpeed;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
         int numBoidDirections=0,numBoidPositions=0;
