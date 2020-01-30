@@ -1,35 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
-public class BoidMaster : MonoBehaviour
-{
+public class BoidMaster : MonoBehaviour {
     // Start is called before the first frame update
     public int NumBoids = 10;
     public GameObject[] Boids = new GameObject[10];
     public BoidObject[] BoidObjects = new BoidObject[10];
     public GameObject boid;
+    public Transform controllerTransform;
     
-    void Start()
-    {
-        Random Rand = new Random();
-        var controllerPosition = transform.position; 
+    void Start() {
+        var rand = new Random();
+        controllerTransform = transform;
+        var controllerPosition = controllerTransform.position; 
         for (var i = 0; i < NumBoids; i++)
         {
-            Boids[i] = GameObject.Instantiate(boid, new Vector3(controllerPosition.x + Rand.Next(-10,10), controllerPosition.y + Rand.Next(-10,10), controllerPosition.z + Rand.Next(-10,10)), Quaternion.LookRotation(new Vector3(Rand.Next(-10, 10), Rand.Next(-10, 10), Rand.Next(-10, 10))));
+            Boids[i] = GameObject.Instantiate(boid, new Vector3(controllerPosition.x + rand.Next(-10,10), controllerPosition.y + rand.Next(-10,10), controllerPosition.z + rand.Next(-10,10)), Quaternion.LookRotation(new Vector3(rand.Next(-10, 10), rand.Next(-10, 10), rand.Next(-10, 10))));
             BoidObjects[i] = Boids[i].GetComponent<BoidObject>();
-            // print(Boids[i]);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    public GameObject getObject(int i)
-    {
-        return Boids[i];
     }
 }
