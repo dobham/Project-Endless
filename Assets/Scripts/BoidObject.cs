@@ -13,10 +13,12 @@ public class BoidObject : MonoBehaviour {
     private BoidMaster _masterScript;
     
     private const float RotationSpeed = 0.01f;
-    
+    private const float MovementSpeed = 0.45f;
+
     private const int NumDirections = 300;
     private const float ViewRadius = 25;
-    private const float ObstacleRadius = 8;
+    private const float ObstacleRadius = 20;
+    private const float boidRadius = 25;
 
     private Vector3[] _observedDirections; //Might be subject to becoming a public variable, might add a feature where other boids will see what boids are in their arrays
     private Vector3[] _observedPositions;
@@ -64,26 +66,24 @@ public class BoidObject : MonoBehaviour {
         }
         else directionCurrent.z -= RotationSpeed;
 
-        objectTransform.position += directionCurrent * 0.5f;
+        objectTransform.position += directionCurrent * MovementSpeed;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
-        int numBoidDirections=0,numBoidPositions=0,numBoidAvoidDirections=0;
+        int numBoidDirections = 0, numBoidPositions = 0;
         for (var i = 0; i < _masterScript.NumBoids; i++)
         { 
             if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < ViewRadius) //DIRECTIONS
             {
                 _observedDirections[i] = _masterScript.BoidObjects[i].directionCurrent;
                 _observedPositions[i] = _masterScript.BoidObjects[i].objectTransform.position;
-                
                 numBoidPositions++;
                 numBoidDirections++;
-                numBoidAvoidDirections++;
             }
         }
-        directionTarget = (Vector3.forward*0.001f + AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.01f + ObstacleAvoid()*0.1f).normalized;
-        // if (directionTarget == Vector3.zero)
-        // {
-        //     directionTarget = Vector3.forward*8;
-        // }
+        directionTarget = (AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.005f + ObstacleAvoid()*0.5f).normalized*MovementSpeed;
+        if (directionTarget == Vector3.zero)
+        {
+            directionTarget = _masterScript.controllerTransform.position - objectTransform.position;
+        }
     }
 
     private static Vector3 AverageHeading(Vector3[] boidDirections, int numBoids) {
@@ -144,13 +144,13 @@ public class BoidObject : MonoBehaviour {
             if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius, obstacleLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
-                average+=directions[i].normalized;
+                average+=directions[i].normalized*(ObstacleRadius-Vector3.Distance(objectTransform.position, _detectedObject.transform.position));
                 numObstacles++;
             }
-            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, ObstacleRadius, boidLayer))
+            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, boidRadius, boidLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
-                average += directions[i].normalized;
+                average += directions[i].normalized * 1f;
                 numObstacles++;
             }
             //Otherwise, there are no obstacles and path is clear
