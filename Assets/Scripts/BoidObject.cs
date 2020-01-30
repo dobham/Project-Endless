@@ -30,12 +30,19 @@ public class BoidObject : MonoBehaviour {
     private void Start() {
         _masterScript = (BoidMaster)GameObject.FindObjectOfType(typeof(BoidMaster));
         objectTransform = transform;
+        
         var startingDirection = objectTransform.rotation * Vector3.forward;
         directionCurrent = startingDirection;
         directionTarget = startingDirection;
+        
         _observedDirections = new Vector3[_masterScript.NumBoids];
         _observedPositions = new Vector3[_masterScript.NumBoids];
         _observedAvoidDirections = new Vector3[_masterScript.NumBoids];
+        
+        obstacleLayer = LayerMask.GetMask("Default");
+        boidLayer = LayerMask.GetMask("Boid");
+        print(obstacleLayer);
+        print(boidLayer);
     }
 
     private void Update() {
@@ -129,14 +136,15 @@ public class BoidObject : MonoBehaviour {
         for (var i = 0; i < NumDirections; i++)
         {
             //If the detected object is a boid, ignore it and dont save the object
-            if (Physics.Raycast(objectTransform.position, directions[i] * 2, ObstacleRadius, boidLayer))
-            {
-                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
-            }
+            
             //If it detects a wall, save the object and get away from it
-            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius))
+            if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius, obstacleLayer))
             {
                 Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
+            }
+            else if (Physics.Raycast(objectTransform.position, directions[i] * 2, ViewRadius, boidLayer))
+            {
+                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
             }
             //Otherwise, there are no obstacles and path is clear
             else
