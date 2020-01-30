@@ -6,8 +6,8 @@ public class BoidObject : MonoBehaviour
 {
     private static readonly Random Rand = new Random();
     
-    public Vector3 direction = new Vector3();
-    public Vector3 position = new Vector3(1,1,1);
+    public Vector3 direction;
+    public Vector3 position;
     public float speed = 10;
     
     private float _viewRadius = 30;
