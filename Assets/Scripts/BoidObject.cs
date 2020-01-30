@@ -79,7 +79,7 @@ public class BoidObject : MonoBehaviour {
                 numBoidAvoidDirections++;
             }
         }
-        directionTarget = AverageHeading(_observedDirections, numBoidDirections) + AveragePosition(_observedPositions, numBoidPositions);
+        directionTarget = (Vector3.forward*0.01f + AverageHeading(_observedDirections, numBoidDirections) + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.01f).normalized;
         ObstacleAvoid();
         // if (directionTarget == Vector3.zero)
         // {
@@ -107,7 +107,7 @@ public class BoidObject : MonoBehaviour {
         }
 
         average /= numBoids;
-
+        //Debug.DrawLine(Vector3.zero, average);
         return average;
     }
 
@@ -149,7 +149,7 @@ public class BoidObject : MonoBehaviour {
             //Otherwise, there are no obstacles and path is clear
             else
             {
-                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
+                //Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
             }
 
             // Ray ray = new Ray(position,directions[i]);
