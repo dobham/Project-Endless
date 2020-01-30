@@ -8,26 +8,27 @@ public class BoidObject : MonoBehaviour
 {
     public Vector3 directionCurrent;
     public Vector3 directionTarget;
-    public Vector3 position;
     public float rotationSpeed = 0.01f;
-    public float movementSpeed = 0.01f; 
-    private Transform objectTransform;
-    public static GameObject Controller;
-    private GameObject[] _boids;
-    private readonly BoidMaster _materScript = Controller.GetComponent<BoidMaster>();
-
-    private Vector3[] _observedPositions;
+    public float movementSpeed = 15f;
     
-    private float _viewRadius = 30;
+    private Transform objectTransform;
+    private GameObject controller;
+    private GameObject[] _boids;
+    private BoidMaster _masterScript;
+    
+    public Vector3[] _observedDirections = new Vector3[10];
+    public Vector3[] _observedPositions = new Vector3[10];
+    
+    private float _viewRadius = 100;
     private float _obstacleRadius = 45;
 
     private void Start()
     {
-        Random rand = new Random();
+        _masterScript = (BoidMaster)GameObject.FindObjectOfType(typeof(BoidMaster));
+        controller = _masterScript.gameObject;
         objectTransform = transform;
-        directionCurrent = new Vector3(rand.Next(-10,10), rand.Next(-10,10), rand.Next(-10,10));
-        directionTarget = new Vector3(rand.Next(-10,10), rand.Next(-10,10), rand.Next(-10,10));
-        _boids = _materScript.Boids;
+        directionCurrent = objectTransform.rotation * Vector3.forward;
+        directionTarget = objectTransform.rotation * Vector3.forward;
     }
 
     private void Update()
@@ -49,21 +50,41 @@ public class BoidObject : MonoBehaviour
             directionCurrent.z += rotationSpeed;
         }
         else directionCurrent.z -= rotationSpeed;
-        
+
+        print(_masterScript.getObject(1));
         objectTransform.position += directionCurrent * movementSpeed;
         objectTransform.rotation = Quaternion.LookRotation(directionCurrent);
-
-        for (var i = 0; i < _materScript.NumBoids; i++)
-        {
-            if (Vector3.Distance(_materScript.BoidObjects[i].position, position) < _viewRadius)
-            {
-                _observedPositions[i] = _materScript.BoidObjects[i].position;
-            }
-        }
-        AverageHeading(_observedPositions, _materScript.NumBoids);
+        int numBoidDirections=0,numBoidPositions=0;
+        // for (var i = 0; i < _masterScript.NumBoids; i++)
+        // {
+        // if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < _viewRadius)
+            // {
+            //     _observedDirections[i] = _masterScript.BoidObjects[i].directionCurrent;
+            //     numBoidDirections++;
+            // }
+            // if (Vector3.Distance(_masterScript.BoidObjects[i].objectTransform.position, objectTransform.position) < _viewRadius)
+            // {
+            //     _observedPositions[i] = _masterScript.BoidObjects[i].objectTransform.position;
+            //     numBoidPositions++;
+            // }
+        // }
+        directionTarget = AverageHeading(_observedDirections, numBoidDirections) /*+ AveragePosition(_observedPositions, numBoidPositions)*/;
     }
 
-    public void AverageHeading(Vector3[] boidPositions, int numBoids)
+    public Vector3 AverageHeading(Vector3[] boidDirections, int numBoids)
+    {
+        var average = Vector3.zero;
+        for (var i = 0; i < numBoids; i++)
+        {
+            average += boidDirections[i];
+        }
+
+        average /= numBoids;
+
+        return average;
+    }
+    
+    public Vector3 AveragePosition(Vector3[] boidPositions, int numBoids)
     {
         Vector3 average = new Vector3();
         for (var i = 0; i < numBoids; i++)
@@ -72,8 +93,8 @@ public class BoidObject : MonoBehaviour
         }
 
         average /= numBoids;
-        
-        directionTarget = average;
+
+        return average;
     }
     
 }
