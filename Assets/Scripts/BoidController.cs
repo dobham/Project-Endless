@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = System.Random;
@@ -15,6 +16,7 @@ public class BoidController : MonoBehaviour
     public Rigidbody boidModel;
     private readonly Rigidbody[] _boidSwarm = new Rigidbody[NumBoids];
     private LayerMask _boidLayer;
+    public Vector3 averageHeading = new Vector3();
     
     void Start()
     {
@@ -33,24 +35,11 @@ public class BoidController : MonoBehaviour
     {
         for (var i = 0; i < NumBoids; i++)
         {
-            _boidSwarm[i].velocity += _boids[i].collisionAvoidForce * Time.deltaTime;
-            _boidSwarm[i].velocity = _boids[i].Direction * _boids[i].Speed;
+            _boidSwarm[i].velocity = _boids[i].Direction * Boid.Speed;
             _boids[i].Position = _boidSwarm[i].position;
-            _boids[i].Velocity = _boidSwarm[i].velocity;
-            _boidSwarm[i].transform.LookAt(_boids[i].Direction);
-            
+            _boidSwarm[i].transform.LookAt(_boids[i].Position +_boids[i].Direction);
             for (var k = 0; k < NumBoids; k++)
             {
-                //If there is an obstacle, cycle through all directions it can view and find one that doesnt crash into it
-                //Then set the acceleration to that and add it to the velocity above
-                //After all of this is done, in the for loop below, take the average "avoidance" heading that all boids will have obtained and make it its own heading
-                if (Boid.CollisionDetected(_boids[k].Position))
-                {
-                    print("AAAAA");
-                    Vector3 collisionAvoidDirection = _boids[k].ClearPath(_boids[k].Position);
-                    _boids[i].collisionAvoidForce = _boids[i].Steer(collisionAvoidDirection);
-                    _boids[i].Direction = collisionAvoidDirection;
-                }
                 //Cycle through all boids, if x y and z values of the boids are within the index i boid's radius, add them to an array,
                 //then get the average heading of all of them, apply that heading to the current boid
                 if (k == i) continue;
@@ -61,16 +50,21 @@ public class BoidController : MonoBehaviour
                 {
                     _boids[i].ObservedBoids[k] = _boids[k];
                     _boids[i].Direction = Boid.AverageHeading(_boids[i].ObservedBoids);
-                    _boids[i].Status[k] = 1;
                 }
                 else
                 {
-                    _boids[i].Direction = _boids[i].Direction;
+                    _boids[i].Direction = Vector3.forward;
                     _boids[i].Status[k] = 0;
                 }
             }
+            // print(_boids[i].Direction);
             _boids[i].ObstacleAvoid(_boids[i].Position, _boids[i].CollisionDirections(), _boidLayer);
+            if (_boids[i].DetectObstacle()) {
+                // _boids[i].Direction = _boids[i].ClearPath(_boids[i].Position, _boidLayer);
+                averageHeading = Vector3.up;
+            }
         }
+        
         Debug.DrawLine(new Vector3(0,0,0), _boids[0].Position*1.5f, Color.white);
     }
 }
@@ -83,14 +77,12 @@ public class Boid : Application
 
     public readonly Boid[] ObservedBoids = new Boid[10];
     public const float ViewRadius = 15;
-    public static float CollisionRadius = 15;
+    public readonly float CollisionRadius = 15;
 
-    public float Speed = 10;
-    public Vector3 Velocity;
-    public Vector3 collisionAvoidForce = Vector3.zero;
-    private int SteerForce = 10;
     public Vector3 Position = new Vector3(Rand.Next(5, 15), Rand.Next(5, 15), Rand.Next(5, 15));
-    public Vector3 Direction = new Vector3(Rand.Next(1, 5), Rand.Next(-5, 10), Rand.Next(1, 10));
+    public const float Speed = 10;
+    public Vector3 Direction = new Vector3(Rand.Next(5, 8), Rand.Next(5, 8), Rand.Next(5, 8));
+
 
     private static readonly float GoldenRatio = (1 + Mathf.Sqrt(5)) / 2;
     private static readonly float AngleIncrement = Mathf.PI * 2 * GoldenRatio;
@@ -101,8 +93,7 @@ public class Boid : Application
     //Function for finding average heading  : FUNCTION 1
     //Cycle through all BOIDS, if one is in the viewRadius, add their heading value to an array
     //Take said array and average all of the values and make it its own heading value
-    public static Vector3 AverageHeading(Boid[] boidArray)
-    {
+    public static Vector3 AverageHeading(Boid[] boidArray) {
         var headingSum = new Vector3();
         var arrLength = boidArray.Count(t1 => t1 != null); //Gets the size of the non null array of boids
         var headings = new Vector3[boidArray.Length];
@@ -114,17 +105,14 @@ public class Boid : Application
                 validDirections[t] = boidArray[t].Direction;
             }
         }
-
-        for (var i = 0; i < arrLength; i++)
+        for (var i = 0 ; i < arrLength; i++)
         {
             headings[i] = validDirections[i];
         }
-
-        for (var i = 0; i < arrLength; i++)
+        for (var i = 0 ; i < arrLength; i++)
         {
             headingSum += headings[i];
         }
-
         var averageHeading = headingSum / arrLength;
         return averageHeading.normalized;
     }
@@ -150,7 +138,7 @@ public class Boid : Application
     //Cast out rays to locate obstacle, if obstacle is near, change heading and speed
     public void ObstacleAvoid(Vector3 position, Vector3[] directions, LayerMask boidLayer)
     {
-        for (var i = 0; i < NumViewDirections; i++)
+        for (int i = 0; i < NumViewDirections; i++)
         {
             //If the detected object is a boid, ignore it and dont save the object
             if (Physics.Raycast(position, directions[i] * 4, CollisionRadius, boidLayer))
@@ -167,40 +155,30 @@ public class Boid : Application
             {
                 Debug.DrawRay(position, directions[i] * 4, Color.green);
             }
+
+            // Ray ray = new Ray(position,directions[i]);
+            // if (Physics.Raycast(ray, CollisionRadius, boidLayer))
+            // {
+            //     Debug.DrawRay(position, directions[i]*4, Color.blue);
+            // }
         }
     }
 
-
-    public static bool CollisionDetected(Vector3 position)
+    public bool DetectObstacle()
     {
-        return Physics.Raycast(position, Vector3.forward, CollisionRadius);
+        return Physics.Raycast(Position, Vector3.forward, CollisionRadius);
     }
 
-    public Vector3 ClearPath(Vector3 position)
-    {
-        var collisionsDirections = CollisionDirections();
-        foreach (var dir in collisionsDirections)
+    public Vector3 ClearPath(Vector3 position, LayerMask boidLayer) {
+        for (int i = 0; i < NumViewDirections; i++)
         {
-            var ray = new Ray(position, dir);
-            if (!Physics.SphereCast(ray, CollisionRadius))
+            Ray ray = new Ray(position,Directions[i]);
+            if (Physics.Raycast(ray, CollisionRadius, boidLayer))
             {
-                return dir;
+                Debug.DrawRay(position, Directions[i]*4, Color.blue);
+                return Directions[i];
             }
         }
-
         return Direction;
     }
-
-    public Vector3 Steer(Vector3 vector)
-    {
-        var v = vector.normalized * Speed - Velocity;
-        return Vector3.ClampMagnitude (v, SteerForce); 
-    }
-
-/*
-Vector3 SteerTowards (Vector3 vector) {
-    Vector3 v = vector.normalized * settings.maxSpeed - velocity;
-    return Vector3.ClampMagnitude (v, settings.maxSteerForce);
-}
- */
 }
