@@ -46,10 +46,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   directionCurrent: {x: 0, y: 0, z: 0}
   directionTarget: {x: 0, y: 0, z: 0}
-  position: {x: 0, y: 0, z: 0}
   rotationSpeed: 0.01
+  movementSpeed: 0.05
   controller: {fileID: 5869978595397589621, guid: 6059c3d6a284224429a2454d1f09756b,
     type: 3}
+  _observedDirections:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  _observedPositions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
 --- !u!1001 &8011217327448229710
 PrefabInstance:
   m_ObjectHideFlags: 0
