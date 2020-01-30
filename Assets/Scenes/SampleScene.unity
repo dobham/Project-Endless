@@ -1301,10 +1301,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5869978595397589620, guid: 6059c3d6a284224429a2454d1f09756b,
         type: 3}
+      propertyPath: Boids.Array.size
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869978595397589620, guid: 6059c3d6a284224429a2454d1f09756b,
+        type: 3}
+      propertyPath: BoidObjects.Array.size
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869978595397589620, guid: 6059c3d6a284224429a2454d1f09756b,
+        type: 3}
       propertyPath: controllerModel
       value: 
       objectReference: {fileID: 3854924435076743674, guid: dcfce60517ef4a84e84dc436c416769a,
         type: 3}
+    - target: {fileID: 5869978595397589620, guid: 6059c3d6a284224429a2454d1f09756b,
+        type: 3}
+      propertyPath: boid
+      value: 
+      objectReference: {fileID: 3659234054523166862, guid: 5610fc6ed5ae0fe44a50e6726fe35e04,
+        type: 3}
+    - target: {fileID: 5869978595397589620, guid: 6059c3d6a284224429a2454d1f09756b,
+        type: 3}
+      propertyPath: NumBoids
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 5869978595397589621, guid: 6059c3d6a284224429a2454d1f09756b,
         type: 3}
       propertyPath: m_Name

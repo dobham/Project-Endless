@@ -12,11 +12,11 @@ public class BoidObject : MonoBehaviour {
     
     private BoidMaster _masterScript;
     
-    private const float RotationSpeed = 0.005f;
+    private const float RotationSpeed = 0.05f;
     private const float MovementSpeed = 0.45f;
 
     private const int NumDirections = 300;
-    private const float ViewRadius = 25;
+    private const float ViewRadius = 250;
     private const float ObstacleRadius = 20;
     private const float boidRadius = 5;
 
@@ -79,14 +79,14 @@ public class BoidObject : MonoBehaviour {
                 numBoidDirections++;
             }
         }
-        directionTarget = (AverageHeading(_observedDirections, numBoidDirections)*2 + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*0.05f + ObstacleAvoid()*0.5f).normalized*MovementSpeed;
+        directionTarget = (AverageHeading(_observedDirections, numBoidDirections)*2 + (AveragePosition(_observedPositions, numBoidPositions)-objectTransform.position)*50000f + ObstacleAvoid()*0.5f).normalized*MovementSpeed;
         if (directionTarget == Vector3.zero)
         {
             directionTarget = _masterScript.controllerTransform.position - objectTransform.position;
         }
     }
 
-    private static Vector3 AverageHeading(Vector3[] boidDirections, int numBoids) {
+    private Vector3 AverageHeading(Vector3[] boidDirections, int numBoids) {
         var average = Vector3.zero;
         for (var i = 0; i < numBoids; i++)
         {
@@ -98,11 +98,11 @@ public class BoidObject : MonoBehaviour {
         return average;
     }
 
-    private static Vector3 AveragePosition(Vector3[] boidPositions, int numBoids) {
+    private Vector3 AveragePosition(Vector3[] boidPositions, int numBoids) {
         Vector3 average = new Vector3();
         for (var i = 0; i < numBoids; i++)
         {
-            average += boidPositions[i];
+            average += boidPositions[i]*Vector3.Distance(objectTransform.position, boidPositions[i]);
         }
 
         average /= numBoids;
@@ -110,7 +110,7 @@ public class BoidObject : MonoBehaviour {
         return average;
     }
 
-    private static Vector3[] GetDirections() {
+    private Vector3[] GetDirections() {
         var goldenRatio = (1 + Mathf.Sqrt(5)) / 2;
         var angleIncrement = Mathf.PI * 2 * goldenRatio;
         
@@ -143,27 +143,21 @@ public class BoidObject : MonoBehaviour {
             //If it detects a wall, save the object and get away from it
             if (Physics.Raycast(objectTransform.position, directions[i] * 2, out _detectedObject, ObstacleRadius, obstacleLayer))
             {
-                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
+                //Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.red);
                 average-=directions[i].normalized*(ObstacleRadius-Vector3.Distance(objectTransform.position, _detectedObject.transform.position));
                 numObstacles++;
             }
             else if (Physics.Raycast(objectTransform.position, directions[i], boidRadius, boidLayer))
             {
-                Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
+                //Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.blue);
                 average += directions[i].normalized * 1f;
                 numObstacles++;
             }
             //Otherwise, there are no obstacles and path is clear
             else
             {
-                //Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
+                // Debug.DrawRay(objectTransform.position, directions[i] * 4, Color.green);
             }
-
-            // Ray ray = new Ray(position,directions[i]);
-            // if (Physics.Raycast(ray, CollisionRadius, boidLayer))
-            // {
-            //     Debug.DrawRay(position, directions[i]*4, Color.blue);
-            // }
         }
         average /= -numObstacles;
         return average;

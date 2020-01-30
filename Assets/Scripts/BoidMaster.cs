@@ -6,9 +6,9 @@ using Random = System.Random;
 
 public class BoidMaster : MonoBehaviour {
     // Start is called before the first frame update
-    public int NumBoids = 10;
-    public GameObject[] Boids = new GameObject[10];
-    public BoidObject[] BoidObjects = new BoidObject[10];
+    public int NumBoids = 100;
+    public GameObject[] Boids = new GameObject[100];
+    public BoidObject[] BoidObjects = new BoidObject[100];
     public GameObject boid;
     public Transform controllerTransform;
     
